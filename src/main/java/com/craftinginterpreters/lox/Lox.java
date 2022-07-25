@@ -9,9 +9,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class Lox {
-
     static boolean hadError = false;
-
     public static void main(String[] args) throws IOException {
         if (args.length > 1) {
             System.out.println("Usage: jlox [script]");
@@ -22,7 +20,6 @@ public class Lox {
             runPrompt();
         }
     }
-
     private static void runFile(String path) throws IOException {
         byte[] bytes = Files.readAllBytes(Paths.get(path));
         run(new String(bytes, Charset.defaultCharset()));
@@ -30,7 +27,6 @@ public class Lox {
             System.exit(65);
         }
     }
-
     private static void runPrompt() throws IOException {
         InputStreamReader input = new InputStreamReader(System.in);
         BufferedReader reader = new BufferedReader(input);
@@ -44,7 +40,6 @@ public class Lox {
             hadError = false;
         }
     }
-
     private static void run(String source) {
         Scanner scanner = new Scanner(source);
         List<Token> tokens = scanner.scanTokens();
@@ -53,11 +48,9 @@ public class Lox {
             System.out.println(token);
         }
     }
-
     static void error(int line, String message) {
         report(line, "", message);
     }
-
     private static void report(int line, String where, String message) {
         System.out.println("[line" + line + "] error" + where + ": " + message);
         hadError = true;
