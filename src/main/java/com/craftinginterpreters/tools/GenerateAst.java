@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class GenerateAst {
+    // cd com/craftinginterpreters
+    // java ./tools/GenerateAst.java ./lox
     public static void main(String[] args) throws IOException {
         if (args.length != 1) {
             System.err.println("Usage: generate _asr <output directory>");
@@ -22,22 +24,6 @@ public class GenerateAst {
         ));
     }
 
-//    package com.craftinginterpreters.lox;
-//
-//    abstract class Expr {
-//        static class Binary extends com.craftinginterpreters.lox.Expr {
-//            final com.craftinginterpreters.lox.Expr left;
-//            final Token token;
-//            final com.craftinginterpreters.lox.Expr right;
-//
-//            Binary(com.craftinginterpreters.lox.Expr left, Token token, com.craftinginterpreters.lox.Expr right) {
-//                this.left = left;
-//                this.token = token;
-//                this.right = right;
-//            }
-//        }
-//    }
-
     private static void defineAst(String outputDIr, String baseName, List<String> types) throws IOException {
         String path = outputDIr + "/" + baseName + ".java";
         try (PrintWriter writer = new PrintWriter(path, StandardCharsets.UTF_8)) {
@@ -46,6 +32,7 @@ public class GenerateAst {
             writer.println("import java.util.List;");
             writer.println();
             writer.println("abstract class " + baseName + " {");
+            defineVisitor(writer, baseName, types);
             // The AST classes.
             for (String type : types) {
                 String[] line = type.split(":");
@@ -53,8 +40,20 @@ public class GenerateAst {
                 String fields = line[1].trim();
                 defineType(writer, baseName, className, fields);
             }
+            // The base accept() method.
+            writer.println();
+            writer.println("  abstract <R> R accept(Visitor<R> visitor);");
             writer.println("}");
         }
+    }
+
+    private static void defineVisitor(PrintWriter writer, String baseName, List<String> types) {
+        writer.println("  interface Visitor<R> {");
+        for (String type : types) {
+            String typeName = type.split(":")[0].trim();
+            writer.println("    R visit" + typeName + baseName + "(" + typeName + " " + baseName.toLowerCase() + ");");
+        }
+        writer.println("  }");
     }
 
     // FIXME: Maybe return String, other than pass writer into
@@ -68,7 +67,13 @@ public class GenerateAst {
             writer.println("        this." + name + " = " + name + ";");
         }
         writer.println("    }");
-        // Class data members
+        // Visitor pattern.
+        writer.println();
+        writer.println("    @Override");
+        writer.println("    <R> R accept(Visitor<R> visitor) {");
+        writer.println("      return visitor.visit" + className + baseName + "(this);");
+        writer.println("    }");
+        // Class data members.
         writer.println();
         for (String param : parameterList) {
             writer.println("    final " + param + ";");
