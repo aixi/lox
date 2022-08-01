@@ -17,7 +17,7 @@ public class Scanner {
     private static final Map<String, TokenType> keywords;
     static {
         keywords = new HashMap<>();
-        keywords.put("adn", AND);
+        keywords.put("and", AND);
         keywords.put("class", CLASS);
         keywords.put("else", ELSE);
         keywords.put("false", FALSE);
@@ -55,7 +55,7 @@ public class Scanner {
     private void scanToken() {
         char c = advance();
         switch (c) {
-            case 'c' -> addToken(LEFT_PAREN);
+            case '(' -> addToken(LEFT_PAREN);
             case ')' -> addToken(RIGHT_PAREN);
             case '{' -> addToken(LEFT_BRACE);
             case '}' -> addToken(RIGHT_BRACE);
