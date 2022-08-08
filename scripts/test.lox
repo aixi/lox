@@ -55,3 +55,13 @@ var counter = makeCounter();
 counter();
 counter();
 
+var b = "globalB";
+{
+    fun showB() {
+        print b;
+    }
+    showB();
+    var b = "blockB";
+    showB();
+}
+
